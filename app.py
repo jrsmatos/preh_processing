@@ -77,8 +77,12 @@ class Sniffer(Thread):
                         move_to_ignored(file)
                     else:
                         order_folder = os.path.join(Config.FOLDER, 'OF_{}'.format(order))
-                        if not os.path.exists(order_folder):
-                            make_order_folder(order_folder)
+                        try:
+                            if not os.path.exists(order_folder):
+                                make_order_folder(order_folder)
+                        except FileNotFoundError:
+                            move_to_ignored(file)
+                            continue
                         shutil.move(file, os.path.join(order_folder, file.split('\\')[-1]))
 
                         # se file for xml 11 (top) iniciar agregação dos ficheiros
@@ -93,11 +97,13 @@ class Sniffer(Thread):
                             all_11 = glob.glob('{}\\{}*.xml'.format(order_folder, sn_11)) + \
                                      glob.glob('{}\\{}*.xml'.format(os.path.join(order_folder, '11'), sn_11))
 
-                            latest_10 = get_latest(all_10)
-                            latest_11 = get_latest(all_11)
+                            if all_10 and all_11:
+                                # se existirem ficheiros 10 e 11 identifica o mais recente para ambos os casos
+                                latest_10 = get_latest(all_10)
+                                latest_11 = get_latest(all_11)
 
-                            # inicia agregação do ficheiro
-                            parse(order_folder, latest_10, latest_11)
+                                # inicia agregação do ficheiro
+                                parse(order_folder, latest_10, latest_11)
 
                             for file in all_10:
                                 shutil.move(file, os.path.join(os.path.join(order_folder, '10'), file.split('\\')[-1]))
