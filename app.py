@@ -62,11 +62,13 @@ class Sniffer(Thread):
         self.stop = False
 
     def run(self):
-        """ Inicia Thread """
+        """ Processa ficheiros XML """
         while not self.stop:
             files = glob.glob('{}\\*.xml'.format(Config.FOLDER))
             time.sleep(0.5)
             for file in files:
+                if self.stop:
+                    return
                 if not str(file.split('\\')[-1]).startswith('10') and not str(file.split('\\')[-1]).startswith('11'):
                     # ficheiros que não começem por 10 ou 11 são ignorados
                     move_to_ignored(file)
@@ -102,8 +104,11 @@ class Sniffer(Thread):
                                 latest_10 = get_latest(all_10)
                                 latest_11 = get_latest(all_11)
 
-                                # inicia agregação do ficheiro
-                                parse(order_folder, latest_10, latest_11)
+                                try:
+                                    # inicia agregação do ficheiro
+                                    parse(order_folder, latest_10, latest_11)
+                                except:
+                                    pass
 
                             for file in all_10:
                                 shutil.move(file, os.path.join(os.path.join(order_folder, '10'), file.split('\\')[-1]))
@@ -114,8 +119,14 @@ class Sniffer(Thread):
 def main():
     sniffer = Sniffer()
     sniffer.start()
-    input("\nPress Any key to exit\n")
+    while True:
+        key = input("\n# # # # # # # # # # #\n"
+                    "# Press 'Q' to exit #"
+                    "\n# # # # # # # # # # #\n")
+        if key.lower() == 'q':
+            break
     sniffer.stop = True
+    print('\nFinishing process...')
 
 
 if __name__ == '__main__':
