@@ -107,7 +107,8 @@ class Sniffer(Thread):
                                 try:
                                     # inicia agregação do ficheiro
                                     parse(order_folder, latest_10, latest_11)
-                                except:
+                                except Exception as error:
+                                    print("erro", error)
                                     pass
 
                             for file in all_10:

@@ -1,2 +1,2 @@
 [PATH]
-folder = C:\Users\god\Desktop\PREH
+folder = C:\Users\god\Desktop\teste1
